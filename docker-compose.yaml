@@ -1,0 +1,34 @@
+version: '3.3'
+services:
+  db:
+    image: mysql:8
+    container_name: sem_mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    expose:
+      - "3306" #for service mysql-proxy
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: es_user
+      MYSQL_PASSWORD: watchword
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./data/:/docker-entrypoint-initdb.d/
+    networks:
+      - spark-network
+
+  spark:
+    image: jupyter/all-spark-notebook:latest
+    ports:
+      - "8888:8888"
+      - "4040-4080:4040-4080"
+    volumes:
+      - /Users/pavitragajanana/Desktop/MyDocuments/DataScience:/home/jovyan/work
+    networks:
+      - spark-network
+      
+networks:
+  spark-network:
+    driver: bridge
